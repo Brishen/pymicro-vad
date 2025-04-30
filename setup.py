@@ -59,7 +59,7 @@ setup(
     url="https://github.com/Brishen/pymicro-vad",
     description="Self-contained voice activity detector",
     long_description="",
-    packages=["pymicro_vad", "pymicro_vad2"],
+    packages=["pymicro_vad"],
     ext_modules=ext_modules,
     zip_safe=False,
     python_requires=">=3.7",
