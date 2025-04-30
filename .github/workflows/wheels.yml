@@ -24,8 +24,8 @@ jobs:
       - name: venv
         run: |
           python -m venv .venv
-          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install --upgrade pip; else .venv/bin/pip install --upgrade pip; fi
-          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install build; else .venv/bin/pip install build; fi
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\uv.exe install --upgrade pip; else .venv/bin/uv install --upgrade pip; fi
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\uv.exe install build; else .venv/bin/uv install build; fi
       - name: build
         run: |
           if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\uv.exe build --wheel; else .venv/bin/uv build --wheel; fi
