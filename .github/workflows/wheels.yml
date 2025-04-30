@@ -34,8 +34,8 @@ jobs:
           if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install --no-index -f dist/ pymicro-vad; else .venv/bin/pip install --no-index -f dist/ pymicro-vad; fi
       - name: test
         run: |
-          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install pytest; else .venv/bin/pip install pytest; fi
-          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pytest.exe -vv tests; else .venv/bin/pytest -vv tests; fi
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install pytest; else pip install pytest; fi
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pytest.exe -vv tests; else pytest -vv tests; fi
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
