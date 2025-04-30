@@ -24,18 +24,18 @@ jobs:
       - name: venv
         run: |
           python -m venv .venv
-          .venv\Scripts\pip.exe install --upgrade pip
-          .venv\Scripts\pip.exe install build
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install --upgrade pip; else .venv/bin/pip install --upgrade pip; fi
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install build; else .venv/bin/pip install build; fi
       - name: build
         run: |
-          .venv\Scripts\python.exe -m build --wheel
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\python.exe -m build --wheel; else .venv/bin/python -m build --wheel; fi
       - name: install
         run: |
-          .venv\Scripts\pip.exe install --no-index -f dist/ pymicro-vad
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install --no-index -f dist/ pymicro-vad; else .venv/bin/pip install --no-index -f dist/ pymicro-vad; fi
       - name: test
         run: |
-          .venv\Scripts\pip.exe install pytest
-          .venv\Scripts\pytest.exe -vv tests
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pip.exe install pytest; else .venv/bin/pip install pytest; fi
+          if [ ${{ matrix.os }} == 'windows-latest' ]; then .venv\Scripts\pytest.exe -vv tests; else .venv/bin/pytest -vv tests; fi
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.6.2
         with:
