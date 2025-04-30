@@ -6,29 +6,77 @@ on:
     types: [created]
 
 jobs:
-  deploy:
-    name: "Build and publish to PyPI"
-    runs-on: ubuntu-latest
+  build_wheels:
+    name: "Build wheels: Python ${{ matrix.python-version }} on ${{ matrix.os }}"
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        python-version: ["3.11", "3.12", "3.13"]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: ${{ matrix.python-version }}
       - name: venv
         run: |
           python -m venv .venv
-      - name: Install dependencies
+      - name: Install dependencies (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          .venv\Scripts\python -m pip install --upgrade pip
+          .venv\Scripts\pip install build wheel pytest
+      - name: Install dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/pip install build wheel pytest
-      - name: build
+      - name: build (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          .venv\Scripts\python -m build --wheel
+      - name: build (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           .venv/bin/python -m build --wheel
-      - name: test
+      - name: install (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          .venv\Scripts\pip install --no-index -f dist/ pymicro_vad2
+      - name: install (Linux)
+        if: matrix.os == 'ubuntu-latest'
         run: |
           .venv/bin/pip install --no-index -f dist/ pymicro_vad2
+      - name: test (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          .venv\Scripts\pytest -vv tests
+      - name: test (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
           .venv/bin/pytest -vv tests
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: package-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: dist/*.whl
+          overwrite: true
+          include-hidden-files: false
+          compression-level: 6
+
+  publish:
+    name: "Publish to PyPI"
+    needs: build_wheels
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: package-*
+          merge-multiple: true
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
