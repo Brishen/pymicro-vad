@@ -41,7 +41,6 @@ jobs:
         with:
           name: package
           path: dist/*.whl
-          if-no-files-found: error
           overwrite: true
           include-hidden-files: false
           compression-level: 6
