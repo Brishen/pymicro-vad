@@ -12,34 +12,30 @@ jobs:
     name: "Wheels: Python ${{ matrix.python-version }} on ${{ matrix.os }}"
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [windows-latest, ubuntu-latest]
         python-version: ["3.11", "3.12", "3.13"]
-        include:
-          - os: "macos-latest"
-            python-version: "native"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
-        if: matrix.python-version != 'native'
         with:
           python-version: ${{ matrix.python-version }}
       - name: venv
         run: |
-          python3 -m venv .venv
-          .venv/bin/pip3 install --upgrade pip
-          .venv/bin/pip3 install build
+          python -m venv .venv
+          .venv\Scripts\pip.exe install --upgrade pip
+          .venv\Scripts\pip.exe install build
       - name: build
         run: |
-          .venv/bin/python3 -m build --wheel
+          .venv\Scripts\python.exe -m build --wheel
       - name: install
         run: |
-          .venv/bin/pip3 install --no-index -f dist/ pymicro-vad
+          .venv\Scripts\pip.exe install --no-index -f dist/ pymicro-vad
       - name: test
         run: |
-          .venv/bin/pip3 install pytest
-          .venv/bin/pytest -vv tests
+          .venv\Scripts\pip.exe install pytest
+          .venv\Scripts\pytest.exe -vv tests
       - name: upload
         uses: actions/upload-artifact@v3
         with:
