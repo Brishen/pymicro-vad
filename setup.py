@@ -1,7 +1,7 @@
 from pathlib import Path
 
 # Available at setup time due to pyproject.toml
-from pybind11.setup_helpers import Pybind11Extension
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 from setuptools import setup
 
 _DIR = Path(__file__).parent
@@ -52,11 +52,17 @@ ext_modules = [
     ),
 ]
 
-# Used for the version in pyproject.toml
 setup(
     name="pymicro_vad",
     version=__version__,
+    author="Michael Hansen",
+    author_email="mike@rhasspy.org",
+    url="https://github.com/rhasspy/pymicro-vad",
+    description="Self-contained voice activity detector",
+    long_description="",
     packages=["pymicro_vad"],
     ext_modules=ext_modules,
     zip_safe=False,
+    python_requires=">=3.7",
+    classifiers=["License :: OSI Approved :: Apache Software License"],
 )
