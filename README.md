@@ -6,7 +6,7 @@ Self-contained voice activity detector (VAD) that uses the machine learning arch
 ## Installation
 
 ``` sh
-pip install pymicro-vad
+pip install pymicro_vad2
 ```
 
 
