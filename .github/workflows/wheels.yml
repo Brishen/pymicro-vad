@@ -8,61 +8,35 @@ on:
       - master
 
 jobs:
-  test:
-    name: "Wheels: Python ${{ matrix.python-version }} on ${{ matrix.os }}"
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
-        python-version: ["3.11", "3.12", "3.13"]
-    runs-on: ${{ matrix.os }}
+        os: [ubuntu-latest, windows-latest]
+
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
+
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - name: venv
-        run: |
-          python -m venv .venv
-      - name: Install dependencies (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          .venv\Scripts\python -m pip install --upgrade pip
-          .venv\Scripts\pip install build wheel pytest
-      - name: Install dependencies (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/pip install build wheel pytest
-      - name: build (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          .venv\Scripts\python -m build --wheel
-      - name: build (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          .venv/bin/python -m build --wheel
-      - name: install (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          .venv\Scripts\pip install --no-index -f dist/ pymicro_vad2
-      - name: install (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          .venv/bin/pip install --no-index -f dist/ pymicro_vad2
-      - name: test (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          .venv\Scripts\pytest -vv tests
-      - name: test (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        run: |
-          .venv/bin/pytest -vv tests
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.6.2
+          python-version: '3.11'
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp37-* cp38-* cp39-* cp310-* cp311-* cp312-* cp313-*"
+          CIBW_SKIP: "*-musllinux*"
+          CIBW_TEST_REQUIRES: pytest
+          CIBW_TEST_COMMAND: pytest -vv {project}/tests
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
         with:
-          name: package-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: dist/*.whl
+          name: wheels-${{ matrix.os }}
+          path: ./wheelhouse/*.whl
           overwrite: true
-          include-hidden-files: false
-          compression-level: 6
