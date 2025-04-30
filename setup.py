@@ -1,43 +1,42 @@
-from pathlib import Path
-
 # Available at setup time due to pyproject.toml
-from pybind11.setup_helpers import Pybind11Extension, build_ext
+from pybind11.setup_helpers import Pybind11Extension
 from setuptools import setup
-
-_DIR = Path(__file__).parent
-_MICROVAD_DIR = _DIR / "micro_vad"
-_FRONTEND_DIR = (
-    _MICROVAD_DIR / "tensorflow" / "lite" / "experimental" / "microfrontend" / "lib"
-)
-_KISSFFT_DIR = _MICROVAD_DIR / "kissfft"
-_INCLUDE_DIR = _MICROVAD_DIR
 
 __version__ = "1.0.2"
 
-sources = [_MICROVAD_DIR / "micro_vad.cpp"]
-sources.extend(
-    _FRONTEND_DIR / f
-    for f in [
-        "kiss_fft_int16.cc",
-        "fft.cc",
-        "fft_util.cc",
-        "filterbank.cc",
-        "filterbank_util.cc",
-        "frontend.cc",
-        "frontend_util.cc",
-        "log_lut.cc",
-        "log_scale.cc",
-        "log_scale_util.cc",
-        "noise_reduction.cc",
-        "noise_reduction_util.cc",
-        "pcan_gain_control.cc",
-        "pcan_gain_control_util.cc",
-        "window.cc",
-        "window_util.cc",
-    ]
-)
-sources.append(_KISSFFT_DIR / "kiss_fft.cc")
-sources.append(_KISSFFT_DIR / "tools" / "kiss_fftr.cc")
+# Define all paths as relative
+microvad_dir = "micro_vad"
+frontend_dir = f"{microvad_dir}/tensorflow/lite/experimental/microfrontend/lib"
+kissfft_dir = f"{microvad_dir}/kissfft"
+
+# Define source files with relative paths
+sources = [f"{microvad_dir}/micro_vad.cpp"]
+frontend_files = [
+    "kiss_fft_int16.cc",
+    "fft.cc",
+    "fft_util.cc",
+    "filterbank.cc",
+    "filterbank_util.cc",
+    "frontend.cc",
+    "frontend_util.cc",
+    "log_lut.cc",
+    "log_scale.cc",
+    "log_scale_util.cc",
+    "noise_reduction.cc",
+    "noise_reduction_util.cc",
+    "pcan_gain_control.cc",
+    "pcan_gain_control_util.cc",
+    "window.cc",
+    "window_util.cc",
+]
+
+# Add frontend sources with proper paths
+for f in frontend_files:
+    sources.append(f"{frontend_dir}/{f}")
+
+# Add kissfft sources
+sources.append(f"{kissfft_dir}/kiss_fft.cc")
+sources.append(f"{kissfft_dir}/tools/kiss_fftr.cc")
 
 flags = ["-DFIXED_POINT=16"]
 ext_modules = [
@@ -46,9 +45,9 @@ ext_modules = [
         language="c++",
         cxx_std=17,
         extra_compile_args=flags,
-        sources=sorted([str(p) for p in sources] + ["python.cpp"]),
+        sources=sorted(sources + ["python.cpp"]),
         define_macros=[("VERSION_INFO", __version__)],
-        include_dirs=[str(_INCLUDE_DIR), str(_KISSFFT_DIR)],
+        include_dirs=[microvad_dir, kissfft_dir],
     ),
 ]
 
@@ -60,7 +59,7 @@ setup(
     url="https://github.com/Brishen/pymicro-vad",
     description="Self-contained voice activity detector",
     long_description="",
-    packages=["pymicro_vad"],
+    packages=["pymicro_vad", "pymicro_vad2"],
     ext_modules=ext_modules,
     zip_safe=False,
     python_requires=">=3.7",
