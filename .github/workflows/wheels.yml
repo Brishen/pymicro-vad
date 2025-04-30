@@ -36,9 +36,12 @@ jobs:
         run: |
           .venv\Scripts\pip.exe install pytest
           .venv\Scripts\pytest.exe -vv tests
-      - name: upload
-        uses: actions/upload-artifact@v3
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: package
           path: dist/*.whl
           if-no-files-found: error
+          overwrite: true
+          include-hidden-files: false
+          compression-level: 6
