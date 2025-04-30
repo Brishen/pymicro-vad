@@ -24,41 +24,39 @@ jobs:
       - name: venv
         run: |
           python -m venv .venv
-      - name: Install uv (Windows)
+      - name: Install dependencies (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           .venv\Scripts\python -m pip install --upgrade pip
-          .venv\Scripts\pip install uv
-      - name: Install uv (Linux)
+          .venv\Scripts\pip install build wheel pytest
+      - name: Install dependencies (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
           .venv/bin/python -m pip install --upgrade pip
-          .venv/bin/pip install uv
+          .venv/bin/pip install build wheel pytest
       - name: build (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          .venv\Scripts\uv build --wheel
+          .venv\Scripts\python -m build --wheel
       - name: build (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          .venv/bin/uv build --wheel
+          .venv/bin/python -m build --wheel
       - name: install (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          .venv\Scripts\uv pip install --no-index -f dist/ pymicro-vad
+          .venv\Scripts\pip install --no-index -f dist/ pymicro_vad
       - name: install (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          .venv/bin/uv pip install --no-index -f dist/ pymicro-vad
+          .venv/bin/pip install --no-index -f dist/ pymicro_vad
       - name: test (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          .venv\Scripts\uv pip install pytest
           .venv\Scripts\pytest -vv tests
       - name: test (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          .venv/bin/uv pip install pytest
           .venv/bin/pytest -vv tests
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v4.6.2
