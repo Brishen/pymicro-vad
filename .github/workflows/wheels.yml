@@ -45,11 +45,11 @@ jobs:
       - name: install (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          .venv\Scripts\pip install --no-index -f dist/ pymicro_vad
+          .venv\Scripts\pip install --no-index -f dist/ pymicro_vad2
       - name: install (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          .venv/bin/pip install --no-index -f dist/ pymicro_vad
+          .venv/bin/pip install --no-index -f dist/ pymicro_vad2
       - name: test (Windows)
         if: matrix.os == 'windows-latest'
         run: |
