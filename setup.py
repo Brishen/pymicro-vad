@@ -53,11 +53,11 @@ ext_modules = [
 ]
 
 setup(
-    name="pymicro_vad",
+    name="pymicro_vad2",
     version=__version__,
     author="Michael Hansen",
     author_email="mike@rhasspy.org",
-    url="https://github.com/rhasspy/pymicro-vad",
+    url="https://https://github.com/Brishen/pymicro-vad",
     description="Self-contained voice activity detector",
     long_description="",
     packages=["pymicro_vad"],
